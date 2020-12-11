@@ -9,7 +9,7 @@ var specialCharset = ['\u0020','\u0021','\u0022','\u0023','\u0024','\u0025','\u0
 
 // specified
 var intPwdLenMinInc = 8;
-var intPwdLenMaxInc = 64;
+var intPwdLenMaxInc = 128;
 
 // init
 var nonZeroOptions = false;
@@ -18,43 +18,58 @@ var intPwdLength = 0;
 var pwdGenString = "";
 var resultPassword = "";
 
-// Write password to the #password input
-function writePassword() {
+// Write password to the DOM element with id #password
+function writePassword()
+{
   var password = generatePassword();
   var passwordText = document.querySelector("#password");
-
   passwordText.value = password;
 }
 
-function generatePassword(){
+function generatePassword()
+{
   // re-init
-  intPwdLength = 0;
+  intPwdLength = 0;                 // reinit
   resultPassword = "";
   pwdGenString = "";
   nonZeroOptions = false;
   pwdComplexityParams = new Map();
 
-  intPwdLength = getPwdLength(intPwdLenMinInc, intPwdLenMaxInc);    // validated
-  getPwdComplexityParams();         // populate pwdComplexityParams with choice data
+  intPwdLength = getPwdLength(intPwdLenMinInc, intPwdLenMaxInc);    // validated in bounds or 0 on error
+
+  if(intPwdLength > 0)
+  {
+    getPwdComplexityParams();         // populate pwdComplexityParams with choice data
   
-  if(nonZeroOptions===true){        // If we have > 0 options to compile
-    getPasswordFromGenerator();     // pwgen with selected character-sets
-    resultPassword = pwdGenString;  // reuse of interface descriptor
-    return resultPassword;          // The password to return;
+    if(nonZeroOptions===true)         // If we have > 0 options to compile
+    {        
+      getPasswordFromGenerator();     // pwgen with selected character-sets
+      resultPassword = pwdGenString;  // reuse of interface descriptor
+      return resultPassword;          // The password to return;
+    }
+    else
+    {
+      return "No character-set options chosen.\n  Try again with one or more character-sets selected.";
+    }
   }
-  else{
-    return "No character-set options chosen.\n  Try again with one or more character-sets selected.";
+  else
+  {
+    return "Invalid LENGTH value entered: input out of bounds.  Try again within displayed upper and lower bounds.";
   }
 }
 
 // For each char in intPwdLength-long string, randomly choose 1 from set of options
-function getPasswordFromGenerator(){
+function getPasswordFromGenerator()
+{
   derefKey = ['l', 'u', 'n', 's'];
 
-  for(i=0, j=Math.floor((Math.random() * 3)); pwdGenString.length<intPwdLength; i++, j=Math.floor((Math.random() * 4))){
+  for( i=0, j=Math.floor((Math.random() * 3)); pwdGenString.length<intPwdLength; i++, j=Math.floor((Math.random() * 4)) )
+  {
     
-    if( pwdComplexityParams.get(derefKey[j])===true ){
-      switch( derefKey[j] ) {
+    if( pwdComplexityParams.get(derefKey[j])===true )
+    {
+      switch( derefKey[j] )
+      {
         case 'l':
           pwdGenString += lowercaseCharset[ Math.floor((Math.random() * (lowercaseCharset.length-1))) ];
           break;
@@ -73,7 +88,8 @@ function getPasswordFromGenerator(){
 }
 
 // Password charset options
-function getPwdComplexityParams(){
+function getPwdComplexityParams()
+{
   if(confirm("Include lowercase characters in password?"))  { pwdComplexityParams.set('l', true), nonZeroOptions = true; };
   if(confirm("Include uppercase characters in password?"))  { pwdComplexityParams.set('u', true), nonZeroOptions = true; };
   if(confirm("Include numeric characters in password?"))    { pwdComplexityParams.set('n', true), nonZeroOptions = true; };
@@ -81,14 +97,21 @@ function getPwdComplexityParams(){
 }
 
 // Password length entry
-function getPwdLength(minLengthInc, maxLengthInc){
+function getPwdLength(minLengthInc, maxLengthInc)
+{
   var result = "0";
 
-  result = prompt("Please enter a number for password length,\nwhere " + minLengthInc + " <= " + " length " + " <= " + maxLengthInc + ".");
+  result = prompt("Password LENGTH: Please enter a number\n within the range: " + minLengthInc + " <= " + " length " + " <= " + maxLengthInc + ".");
   result = parseInt(result);
 
-  if(( (minLengthInc<=result) && (result<=maxLengthInc) )){
+  if(( (minLengthInc<=result) && (result<=maxLengthInc) ))
+  {
     return result;  // return the in-bounds integer
+  }
+  else
+  {
+    alert("Invalid LENGTH value: input out of bounds.  Please try again");
+    return 0;
   }
 }
 
