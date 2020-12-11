@@ -9,9 +9,9 @@ A utility for password generation
 - Serve main branch via GitHub Pages.
 
 ## Usage
-View the site at [password-generator](https://brhestir.github.io/password-generator/)
+Try it out at [password-generator](https://brhestir.github.io/password-generator/)
 
-![Preview of password-generator site](assets/images/password-generator.png)
+![Preview of password-generator site](./assets/password-generator.png)
 
 ## Credits
 
